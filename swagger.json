@@ -1,0 +1,84 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Connect Four API",
+    "version": "1.0.0",
+    "description": "API специфікація для серверної логіки Connect Four."
+  },
+  "servers": [
+    {
+      "url": "https://api.connectfour.local/v1"
+    }
+  ],
+  "paths": {
+    "/games/start": {
+      "post": {
+        "summary": "Ініціалізація нової ігрової сесії",
+        "description": "Створює нову гру та повертає унікальний ідентифікатор сесії.",
+        "responses": {
+          "201": {
+            "description": "Гру успішно створено",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gameId": { "type": "string", "example": "cf-54321" },
+                    "status": { "type": "string", "example": "in_progress" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/games/{gameId}/move": {
+      "post": {
+        "summary": "Зробити хід у вказаній грі",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "cf-54321"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "column": { "type": "integer", "minimum": 0, "maximum": 6, "example": 3 },
+                  "playerId": { "type": "string", "example": "player_1" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Хід прийнято, повертається оновлений стан дошки",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isWin": { "type": "boolean", "example": false },
+                    "nextPlayer": { "type": "string", "example": "player_2" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Невалідний хід (наприклад, колонка заповнена)"
+          }
+        }
+      }
+    }
+  }
+}
